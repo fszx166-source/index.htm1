@@ -8,167 +8,239 @@ PAGE = r"""
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تكروني الكتروني للخميعات😎</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>خميعات لليوزرات</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
+    padding: 30px 18px 45px;
     min-height: 100vh;
-    background: #08090d;
-    color: white;
+    background: #08090e;
+    color: #ffffff;
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 25px 14px;
 }
 
 .container {
     width: 100%;
-    max-width: 460px;
+    max-width: 720px;
+    margin: 0 auto;
 }
 
 .header {
     text-align: center;
-    margin: 20px 0 25px;
+    padding: 30px 10px 35px;
 }
 
 .header h1 {
     color: #b9a0ff;
-    font-size: 29px;
-    margin-bottom: 8px;
+    font-size: clamp(28px, 6vw, 38px);
+    margin: 0 0 15px;
+    line-height: 1.6;
 }
 
 .header p {
-    color: #9999aa;
-    font-size: 13px;
+    color: #a3a3b5;
+    font-size: 15px;
+    line-height: 2;
+    margin: 0;
 }
 
 .panel {
-    background: #12131b;
-    border: 1px solid #292a38;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 17px;
+    width: 100%;
+    background: #14151e;
+    border: 1px solid #303141;
+    border-radius: 22px;
+    padding: 28px;
+    margin-bottom: 25px;
 }
 
 label {
     display: block;
-    color: #c7c7d6;
-    margin-bottom: 10px;
-    font-size: 14px;
-}
-
-select, button {
-    width: 100%;
-    padding: 14px;
-    border-radius: 11px;
-    font-size: 15px;
-    font-weight: bold;
+    font-size: 16px;
+    color: #e0deeb;
+    margin-bottom: 14px;
 }
 
 select {
-    background: #090a10;
+    width: 100%;
+    height: 56px;
+    padding: 0 16px;
+    background: #090a11;
     color: white;
-    border: 1px solid #343548;
-    margin-bottom: 15px;
+    border: 1px solid #3b3b50;
+    border-radius: 13px;
+    font-size: 16px;
+    margin-bottom: 18px;
 }
 
 button {
+    min-height: 54px;
     border: 0;
+    border-radius: 13px;
+    padding: 15px 18px;
+    font-size: 15px;
+    font-weight: bold;
     cursor: pointer;
-    margin-top: 8px;
 }
 
 .start {
-    background: #9b7bff;
+    display: block;
+    width: 100%;
+    background: #a68aff;
     color: #100b20;
-}
-
-.stop {
-    background: #292a38;
-    color: white;
-}
-
-.results-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 13px;
 }
 
-.results-title h3 {
+.stop {
+    display: block;
+    width: 100%;
+    background: #292a38;
+    color: white;
+    border: 1px solid #414254;
+}
+
+.results-heading {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.results-heading h2 {
+    font-size: 20px;
     margin: 0;
-    font-size: 17px;
+    line-height: 1.7;
 }
 
 .counter {
     color: #b9a0ff;
-    font-size: 13px;
+    font-size: 14px;
+}
+
+#results {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .result {
-    background: #090a10;
-    border: 1px solid #292a38;
-    border-radius: 10px;
-    padding: 13px;
-    margin-top: 9px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+    padding: 18px;
+    background: #0b0c13;
+    border: 1px solid #303141;
+    border-radius: 15px;
+}
+
+.details {
+    flex: 1;
+    min-width: 0;
 }
 
 .username {
-    font-size: 16px;
+    color: #ffffff;
+    font-size: 18px;
     font-weight: bold;
+    line-height: 1.8;
     overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .status {
     display: block;
-    color: #f0c674;
-    font-size: 11px;
+    color: #e8c777;
+    font-size: 12px;
+    line-height: 1.8;
     margin-top: 5px;
 }
 
 .copy {
+    flex-shrink: 0;
     width: auto;
-    margin: 0;
-    padding: 9px 12px;
-    background: #292a38;
-    color: white;
-    font-size: 12px;
+    min-width: 78px;
+    min-height: 44px;
+    padding: 10px 14px;
+    background: #292a3a;
+    color: #ffffff;
+    font-size: 13px;
 }
 
-.note {
+.empty {
+    padding: 25px 12px;
+    text-align: center;
+    color: #9292a4;
+    font-size: 14px;
+    line-height: 2;
+}
+
+.footer {
+    padding: 10px 15px;
     text-align: center;
     color: #858596;
     font-size: 12px;
-    line-height: 1.8;
-    padding: 8px;
+    line-height: 2;
+}
+
+@media (max-width: 420px) {
+    body {
+        padding: 18px 12px 30px;
+    }
+
+    .header {
+        padding: 22px 5px 28px;
+    }
+
+    .panel {
+        padding: 20px 15px;
+        border-radius: 18px;
+    }
+
+    .result {
+        padding: 14px 11px;
+        gap: 10px;
+    }
+
+    .username {
+        font-size: 16px;
+    }
+
+    .copy {
+        min-width: 62px;
+        padding: 10px;
+    }
 }
 </style>
 </head>
 
 <body>
-<div class="container">
+<main class="container">
 
     <header class="header">
         <h1>خميعات لليوزرات</h1>
-        <p>مولّد خماسيات وثلاثيات ورباعيات اليوزرات</p>
+        <p>مولّد اقتراحات اليوزرات</p>
     </header>
 
     <section class="panel">
         <label for="length">اختر طول اليوزر</label>
+
         <select id="length">
             <option value="3">ثلاثي — 3 خانات</option>
             <option value="4" selected>رباعي — 4 خانات</option>
         </select>
 
-        <button class="start" id="startBtn" onclick="startGenerating()">
+        <button class="start" id="startBtn"
+                onclick="startGenerating()">
             START GENERATING
         </button>
 
@@ -178,29 +250,32 @@ button {
     </section>
 
     <section class="panel">
-        <div class="results-title">
-            <h3>اليوزرات المولّدة</h3>
+        <div class="results-heading">
+            <h2>اليوزرات المولّدة</h2>
             <span class="counter" id="counter">0 يوزر</span>
         </div>
 
         <div id="results">
-            <p class="note">اضغط START GENERATING للبدء</p>
+            <div class="empty">
+                اضغط START GENERATING للبدء
+            </div>
         </div>
     </section>
 
-    <p class="note">
-        يتم توليد اقتراحات عشوائية فقط. حالة التوفر في تيك توك غير مؤكدة.
-    </p>
+    <footer class="footer">
+        هذه اقتراحات عشوائية، وليست تأكيدًا على توفر اليوزر في تيك توك.
+    </footer>
 
-</div>
+</main>
 
 <script>
 let running = false;
 let timer = null;
 let count = 0;
-let seen = new Set();
+const seen = new Set();
 
-const characters = "abcdefghijklmnopqrstuvwxyz0123456789._";
+const characters =
+    "abcdefghijklmnopqrstuvwxyz0123456789._";
 
 function makeUsername(length) {
     let username = "";
@@ -217,7 +292,7 @@ function makeUsername(length) {
 function addUsername(username) {
     const results = document.getElementById("results");
 
-    if (results.querySelector(".note")) {
+    if (results.querySelector(".empty")) {
         results.innerHTML = "";
     }
 
@@ -225,6 +300,7 @@ function addUsername(username) {
     row.className = "result";
 
     const details = document.createElement("div");
+    details.className = "details";
 
     const name = document.createElement("div");
     name.className = "username";
@@ -245,8 +321,11 @@ function addUsername(username) {
         try {
             await navigator.clipboard.writeText(username);
             copy.textContent = "تم النسخ";
-            setTimeout(() => copy.textContent = "نسخ", 1000);
-        } catch {
+
+            setTimeout(function () {
+                copy.textContent = "نسخ";
+            }, 1200);
+        } catch (error) {
             window.prompt("انسخ اليوزر:", username);
         }
     };
@@ -256,9 +335,10 @@ function addUsername(username) {
     results.prepend(row);
 
     count++;
-    document.getElementById("counter").textContent = count + " يوزر";
+    document.getElementById("counter").textContent =
+        count + " يوزر";
 
-    while (results.children.length > 60) {
+    while (results.children.length > 50) {
         results.removeChild(results.lastElementChild);
     }
 }
@@ -267,10 +347,14 @@ function startGenerating() {
     if (running) return;
 
     running = true;
-    document.getElementById("startBtn").textContent = "GENERATING...";
+    document.getElementById("startBtn").textContent =
+        "GENERATING...";
 
-    timer = setInterval(() => {
-        const length = Number(document.getElementById("length").value);
+    timer = setInterval(function () {
+        const length = Number(
+            document.getElementById("length").value
+        );
+
         let username;
 
         do {
@@ -279,13 +363,16 @@ function startGenerating() {
 
         seen.add(username);
         addUsername(username);
-    }, 180);
+    }, 250);
 }
 
 function stopGenerating() {
     running = false;
     clearInterval(timer);
-    document.getElementById("startBtn").textContent = "START GENERATING";
+    timer = null;
+
+    document.getElementById("startBtn").textContent =
+        "START GENERATING";
 }
 </script>
 </body>
