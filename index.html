@@ -13,7 +13,8 @@ body {
   padding: 20px;
 }
 h2 { text-align: center; }
-button, input {
+button, select {
+  box-sizing: border-box;
   background: #111;
   color: #00ff66;
   border: 1px solid #00ff66;
@@ -22,6 +23,7 @@ button, input {
   width: 100%;
   font-size: 16px;
 }
+button:active { background: #063b1b; }
 #log {
   border: 1px solid #00ff66;
   padding: 12px;
@@ -30,29 +32,40 @@ button, input {
   overflow-wrap: anywhere;
 }
 .small { color: #999; font-size: 12px; }
+.ok { color: #00ff66; }
+.err { color: #ff4444; }
+.unknown { color: #ffcc00; }
 </style>
 </head>
 <body>
+
 <h2>FX USER SCANNER</h2>
 <p>USERNAME GENERATOR</p>
 
-<label>Username length:</label>
+<label for="length">Username length:</label>
 <select id="length">
-<option value="3">3 characters</option>
-<option value="4">4 characters</option>
+  <option value="3">3 characters</option>
+  <option value="4">4 characters</option>
 </select>
 
 <button onclick="start()">START GENERATING</button>
 <button onclick="stop()">STOP</button>
+<button onclick="checkNames()">CHECK USERNAMES</button>
 
 <p class="small">
-This tool generates ideas only. Availability is not verified.
+Dots and underscores are included. Availability requires reliable
+confirmation from TikTok.
 </p>
+
 <div id="log">System ready...</div>
 
 <script>
 let running = false;
+let timer = null;
+let names = [];
+
 const chars = "abcdefghijklmnopqrstuvwxyz0123456789_.";
+const log = document.getElementById("log");
 
 function makeName(n) {
   let name = "";
@@ -62,29 +75,103 @@ function makeName(n) {
   return name;
 }
 
-function start() {
-  running = true;
-  const log = document.getElementById("log");
-  const n = Number(document.getElementById("length").value);
-  log.innerHTML = "Generating usernames...<br>";
+function addLine(text, className = "") {
+  const line = document.createElement("div");
+  line.className = className;
+  line.textContent = text;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
 
+function start() {
+  stop(false);
+  running = true;
+  names = [];
+  log.textContent = "Generating usernames...";
+
+  const n = Number(document.getElementById("length").value);
   let count = 0;
+
   function generate() {
-    if (!running || count >= 100) return;
-    log.innerHTML += "> @" + makeName(n) +
-      " — AVAILABILITY UNKNOWN<br>";
-    log.scrollTop = log.scrollHeight;
+    if (!running || count >= 100) {
+      running = false;
+      addLine("Generation finished.", "ok");
+      return;
+    }
+
+    const name = makeName(n);
+    names.push(name);
+    addLine("> @" + name + " — GENERATED OK", "ok");
+
     count++;
-    setTimeout(generate, 100);
+    timer = setTimeout(generate, 100);
   }
+
   generate();
 }
 
-function stop() {
+function stop(showMessage = true) {
   running = false;
-  document.getElementById("log").innerHTML +=
-    "<br>Generation stopped.";
+  if (timer !== null) {
+    clearTimeout(timer);
+    timer = null;
+  }
+  if (showMessage) addLine("Generation stopped.");
+}
+
+async function checkNames() {
+  stop(false);
+
+  if (names.length === 0) {
+    addLine("ERROR: Generate usernames first.", "err");
+    return;
+  }
+
+  addLine("Checking usernames with server...");
+
+  try {
+    const response = await fetch("/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usernames: names.slice(0, 30) })
+    });
+
+    if (!response.ok) {
+      throw new Error("Server returned HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data.results)) {
+      throw new Error("Unexpected server response");
+    }
+
+    for (const item of data.results) {
+      const status = String(item.status || "");
+
+      if (status.includes("تعذر الاتصال") ||
+          status.includes("تعذر الفحص") ||
+          status.includes("فشل")) {
+        addLine("@" + item.username + " — CHECK ERROR", "err");
+      } else {
+        addLine(
+          "@" + item.username + " — CHECK RESPONDED; AVAILABILITY UNKNOWN",
+          "unknown"
+        );
+      }
+    }
+
+    addLine("Check request completed.", "ok");
+
+  } catch (error) {
+    addLine(
+      "CHECK ERROR: Could not reach the checking service. " +
+      error.message,
+      "err"
+    );
+  }
 }
 </script>
+
 </body>
 </html>
