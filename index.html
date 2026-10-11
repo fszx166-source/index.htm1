@@ -1,120 +1,300 @@
 
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+PAGE = r"""
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FX USER SCANNER</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تكروني الكتروني للخميعات😎</title>
+
 <style>
+* { box-sizing: border-box; }
+
 body {
-  background: #050505;
-  color: #00ff66;
-  font-family: monospace;
-  padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+    background: #08090d;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 25px 14px;
 }
-h2 { text-align: center; }
-button, select {
-  box-sizing: border-box;
-  background: #111;
-  color: #00ff66;
-  border: 1px solid #00ff66;
-  padding: 12px;
-  margin: 6px 0;
-  width: 100%;
-  font-size: 16px;
+
+.container {
+    width: 100%;
+    max-width: 460px;
 }
-#log {
-  border: 1px solid #00ff66;
-  padding: 12px;
-  height: 300px;
-  overflow-y: auto;
-  overflow-wrap: anywhere;
+
+.header {
+    text-align: center;
+    margin: 20px 0 25px;
 }
-.small { color: #999; font-size: 12px; }
-.ok { color: #00ff66; }
-.err { color: #ff4444; }
+
+.header h1 {
+    color: #b9a0ff;
+    font-size: 29px;
+    margin-bottom: 8px;
+}
+
+.header p {
+    color: #9999aa;
+    font-size: 13px;
+}
+
+.panel {
+    background: #12131b;
+    border: 1px solid #292a38;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 17px;
+}
+
+label {
+    display: block;
+    color: #c7c7d6;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+select, button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 11px;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+select {
+    background: #090a10;
+    color: white;
+    border: 1px solid #343548;
+    margin-bottom: 15px;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.start {
+    background: #9b7bff;
+    color: #100b20;
+}
+
+.stop {
+    background: #292a38;
+    color: white;
+}
+
+.results-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 13px;
+}
+
+.results-title h3 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.counter {
+    color: #b9a0ff;
+    font-size: 13px;
+}
+
+.result {
+    background: #090a10;
+    border: 1px solid #292a38;
+    border-radius: 10px;
+    padding: 13px;
+    margin-top: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.username {
+    font-size: 16px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.status {
+    display: block;
+    color: #f0c674;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.copy {
+    width: auto;
+    margin: 0;
+    padding: 9px 12px;
+    background: #292a38;
+    color: white;
+    font-size: 12px;
+}
+
+.note {
+    text-align: center;
+    color: #858596;
+    font-size: 12px;
+    line-height: 1.8;
+    padding: 8px;
+}
 </style>
 </head>
+
 <body>
-<h2>FX USER SCANNER</h2>
-<p>USERNAME GENERATOR</p>
+<div class="container">
 
-<label for="length">Username length:</label>
-<select id="length">
-  <option value="3">3 characters</option>
-  <option value="4" selected>4 characters</option>
-</select>
+    <header class="header">
+        <h1>خميعات لليوزرات</h1>
+        <p>مولّد خماسيات وثلاثيات ورباعيات اليوزرات</p>
+    </header>
 
-<button id="start">START GENERATING</button>
-<button id="stop">STOP</button>
+    <section class="panel">
+        <label for="length">اختر طول اليوزر</label>
+        <select id="length">
+            <option value="3">ثلاثي — 3 خانات</option>
+            <option value="4" selected>رباعي — 4 خانات</option>
+        </select>
 
-<p class="small">
-Generates username ideas only. TikTok availability is not verified.
-</p>
-<div id="log">System ready...</div>
+        <button class="start" id="startBtn" onclick="startGenerating()">
+            START GENERATING
+        </button>
+
+        <button class="stop" onclick="stopGenerating()">
+            STOP
+        </button>
+    </section>
+
+    <section class="panel">
+        <div class="results-title">
+            <h3>اليوزرات المولّدة</h3>
+            <span class="counter" id="counter">0 يوزر</span>
+        </div>
+
+        <div id="results">
+            <p class="note">اضغط START GENERATING للبدء</p>
+        </div>
+    </section>
+
+    <p class="note">
+        يتم توليد اقتراحات عشوائية فقط. حالة التوفر في تيك توك غير مؤكدة.
+    </p>
+
+</div>
 
 <script>
 let running = false;
 let timer = null;
 let count = 0;
+let seen = new Set();
 
-const chars = "abcdefghijklmnopqrstuvwxyz0123456789_.";
-const log = document.getElementById("log");
+const characters = "abcdefghijklmnopqrstuvwxyz0123456789._";
 
-function makeName(length) {
-  let name = "";
-  for (let i = 0; i < length; i++) {
-    name += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return name;
+function makeUsername(length) {
+    let username = "";
+
+    for (let i = 0; i < length; i++) {
+        username += characters[
+            Math.floor(Math.random() * characters.length)
+        ];
+    }
+
+    return username;
 }
 
-function addLine(message, type = "") {
-  const line = document.createElement("div");
-  line.className = type;
-  line.textContent = message;
-  log.appendChild(line);
-  log.scrollTop = log.scrollHeight;
+function addUsername(username) {
+    const results = document.getElementById("results");
+
+    if (results.querySelector(".note")) {
+        results.innerHTML = "";
+    }
+
+    const row = document.createElement("div");
+    row.className = "result";
+
+    const details = document.createElement("div");
+
+    const name = document.createElement("div");
+    name.className = "username";
+    name.textContent = "@" + username;
+
+    const status = document.createElement("span");
+    status.className = "status";
+    status.textContent = "التوفر غير معروف";
+
+    details.appendChild(name);
+    details.appendChild(status);
+
+    const copy = document.createElement("button");
+    copy.className = "copy";
+    copy.textContent = "نسخ";
+
+    copy.onclick = async function () {
+        try {
+            await navigator.clipboard.writeText(username);
+            copy.textContent = "تم النسخ";
+            setTimeout(() => copy.textContent = "نسخ", 1000);
+        } catch {
+            window.prompt("انسخ اليوزر:", username);
+        }
+    };
+
+    row.appendChild(details);
+    row.appendChild(copy);
+    results.prepend(row);
+
+    count++;
+    document.getElementById("counter").textContent = count + " يوزر";
+
+    while (results.children.length > 60) {
+        results.removeChild(results.lastElementChild);
+    }
 }
 
-function stop(showMessage = true) {
-  running = false;
-  if (timer !== null) {
-    clearTimeout(timer);
-    timer = null;
-  }
-  if (showMessage) addLine("Generation stopped.");
+function startGenerating() {
+    if (running) return;
+
+    running = true;
+    document.getElementById("startBtn").textContent = "GENERATING...";
+
+    timer = setInterval(() => {
+        const length = Number(document.getElementById("length").value);
+        let username;
+
+        do {
+            username = makeUsername(length);
+        } while (seen.has(username));
+
+        seen.add(username);
+        addUsername(username);
+    }, 180);
 }
 
-function generate() {
-  if (!running) return;
-
-  if (count >= 100) {
-    stop(false);
-    addLine("Generation completed: 100 usernames.", "ok");
-    return;
-  }
-
-  const length = Number(document.getElementById("length").value);
-  const username = makeName(length);
-
-  addLine("@"+username+" — GENERATED OK", "ok");
-  count++;
-  timer = setTimeout(generate, 150);
+function stopGenerating() {
+    running = false;
+    clearInterval(timer);
+    document.getElementById("startBtn").textContent = "START GENERATING";
 }
-
-document.getElementById("start").addEventListener("click", () => {
-  stop(false);
-  log.textContent = "";
-  count = 0;
-  running = true;
-  addLine("Generating usernames...");
-  generate();
-});
-
-document.getElementById("stop").addEventListener("click", () => {
-  stop();
-});
 </script>
 </body>
 </html>
+"""
+
+@app.route("/")
+def home():
+    return render_template_string(PAGE)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
