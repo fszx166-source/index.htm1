@@ -1,19 +1,90 @@
+
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ابليس🩶فرعون</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FX USER SCANNER</title>
+<style>
+body {
+  background: #050505;
+  color: #00ff66;
+  font-family: monospace;
+  padding: 20px;
+}
+h2 { text-align: center; }
+button, input {
+  background: #111;
+  color: #00ff66;
+  border: 1px solid #00ff66;
+  padding: 12px;
+  margin: 5px 0;
+  width: 100%;
+  font-size: 16px;
+}
+#log {
+  border: 1px solid #00ff66;
+  padding: 12px;
+  height: 300px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+.small { color: #999; font-size: 12px; }
+</style>
 </head>
 <body>
+<h2>FX USER SCANNER</h2>
+<p>USERNAME GENERATOR</p>
 
-<h1>كلام ابليس😖</h1>
+<label>Username length:</label>
+<select id="length">
+<option value="3">3 characters</option>
+<option value="4">4 characters</option>
+</select>
 
-<p>
-“لا تختبر صبري، لأنك ما راح تعجبك النتيجة.”<br>
-“اعتبرها آخر مرة أتجاوز فيها عن الموضوع.”<br>
-“وقف عند حدك، ولا تضطرني أتصرف بطريقة ما تعجبك.”<br>
-“أنا ساكت احترامًا، فلا تخليني أغيّر أسلوبي معك.”
+<button onclick="start()">START GENERATING</button>
+<button onclick="stop()">STOP</button>
+
+<p class="small">
+This tool generates ideas only. Availability is not verified.
 </p>
+<div id="log">System ready...</div>
 
+<script>
+let running = false;
+const chars = "abcdefghijklmnopqrstuvwxyz0123456789_.";
+
+function makeName(n) {
+  let name = "";
+  for (let i = 0; i < n; i++) {
+    name += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return name;
+}
+
+function start() {
+  running = true;
+  const log = document.getElementById("log");
+  const n = Number(document.getElementById("length").value);
+  log.innerHTML = "Generating usernames...<br>";
+
+  let count = 0;
+  function generate() {
+    if (!running || count >= 100) return;
+    log.innerHTML += "> @" + makeName(n) +
+      " — AVAILABILITY UNKNOWN<br>";
+    log.scrollTop = log.scrollHeight;
+    count++;
+    setTimeout(generate, 100);
+  }
+  generate();
+}
+
+function stop() {
+  running = false;
+  document.getElementById("log").innerHTML +=
+    "<br>Generation stopped.";
+}
+</script>
 </body>
 </html>
