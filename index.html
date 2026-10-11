@@ -8,239 +8,167 @@ PAGE = r"""
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خميعات لليوزرات</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
-    padding: 30px 18px 45px;
     min-height: 100vh;
-    background: #08090e;
-    color: #ffffff;
+    background: #08090d;
+    color: white;
     font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 25px 14px;
 }
 
 .container {
     width: 100%;
-    max-width: 720px;
-    margin: 0 auto;
+    max-width: 460px;
 }
 
 .header {
     text-align: center;
-    padding: 30px 10px 35px;
+    margin: 20px 0 25px;
 }
 
 .header h1 {
     color: #b9a0ff;
-    font-size: clamp(28px, 6vw, 38px);
-    margin: 0 0 15px;
-    line-height: 1.6;
+    font-size: 29px;
+    margin-bottom: 8px;
 }
 
 .header p {
-    color: #a3a3b5;
-    font-size: 15px;
-    line-height: 2;
-    margin: 0;
+    color: #9999aa;
+    font-size: 13px;
 }
 
 .panel {
-    width: 100%;
-    background: #14151e;
-    border: 1px solid #303141;
-    border-radius: 22px;
-    padding: 28px;
-    margin-bottom: 25px;
+    background: #12131b;
+    border: 1px solid #292a38;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 17px;
 }
 
 label {
     display: block;
-    font-size: 16px;
-    color: #e0deeb;
-    margin-bottom: 14px;
+    color: #c7c7d6;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+select, button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 11px;
+    font-size: 15px;
+    font-weight: bold;
 }
 
 select {
-    width: 100%;
-    height: 56px;
-    padding: 0 16px;
-    background: #090a11;
+    background: #090a10;
     color: white;
-    border: 1px solid #3b3b50;
-    border-radius: 13px;
-    font-size: 16px;
-    margin-bottom: 18px;
+    border: 1px solid #343548;
+    margin-bottom: 15px;
 }
 
 button {
-    min-height: 54px;
     border: 0;
-    border-radius: 13px;
-    padding: 15px 18px;
-    font-size: 15px;
-    font-weight: bold;
     cursor: pointer;
+    margin-top: 8px;
 }
 
 .start {
-    display: block;
-    width: 100%;
-    background: #a68aff;
+    background: #9b7bff;
     color: #100b20;
-    margin-bottom: 13px;
 }
 
 .stop {
-    display: block;
-    width: 100%;
     background: #292a38;
     color: white;
-    border: 1px solid #414254;
 }
 
-.results-heading {
+.results-title {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 22px;
+    margin-bottom: 13px;
 }
 
-.results-heading h2 {
-    font-size: 20px;
+.results-title h3 {
     margin: 0;
-    line-height: 1.7;
+    font-size: 17px;
 }
 
 .counter {
     color: #b9a0ff;
-    font-size: 14px;
-}
-
-#results {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    font-size: 13px;
 }
 
 .result {
+    background: #090a10;
+    border: 1px solid #292a38;
+    border-radius: 10px;
+    padding: 13px;
+    margin-top: 9px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    width: 100%;
-    min-width: 0;
-    padding: 18px;
-    background: #0b0c13;
-    border: 1px solid #303141;
-    border-radius: 15px;
-}
-
-.details {
-    flex: 1;
-    min-width: 0;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 .username {
-    color: #ffffff;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
-    line-height: 1.8;
     overflow-wrap: anywhere;
-    word-break: break-word;
 }
 
 .status {
     display: block;
-    color: #e8c777;
-    font-size: 12px;
-    line-height: 1.8;
+    color: #f0c674;
+    font-size: 11px;
     margin-top: 5px;
 }
 
 .copy {
-    flex-shrink: 0;
     width: auto;
-    min-width: 78px;
-    min-height: 44px;
-    padding: 10px 14px;
-    background: #292a3a;
-    color: #ffffff;
-    font-size: 13px;
+    margin: 0;
+    padding: 9px 12px;
+    background: #292a38;
+    color: white;
+    font-size: 12px;
 }
 
-.empty {
-    padding: 25px 12px;
-    text-align: center;
-    color: #9292a4;
-    font-size: 14px;
-    line-height: 2;
-}
-
-.footer {
-    padding: 10px 15px;
+.note {
     text-align: center;
     color: #858596;
     font-size: 12px;
-    line-height: 2;
-}
-
-@media (max-width: 420px) {
-    body {
-        padding: 18px 12px 30px;
-    }
-
-    .header {
-        padding: 22px 5px 28px;
-    }
-
-    .panel {
-        padding: 20px 15px;
-        border-radius: 18px;
-    }
-
-    .result {
-        padding: 14px 11px;
-        gap: 10px;
-    }
-
-    .username {
-        font-size: 16px;
-    }
-
-    .copy {
-        min-width: 62px;
-        padding: 10px;
-    }
+    line-height: 1.8;
+    padding: 8px;
 }
 </style>
 </head>
 
 <body>
-<main class="container">
+<div class="container">
 
     <header class="header">
         <h1>خميعات لليوزرات</h1>
-        <p>مولّد اقتراحات اليوزرات</p>
+        <p>مولّد خماسيات وثلاثيات ورباعيات اليوزرات</p>
     </header>
 
     <section class="panel">
         <label for="length">اختر طول اليوزر</label>
-
         <select id="length">
             <option value="3">ثلاثي — 3 خانات</option>
             <option value="4" selected>رباعي — 4 خانات</option>
         </select>
 
-        <button class="start" id="startBtn"
-                onclick="startGenerating()">
+        <button class="start" id="startBtn" onclick="startGenerating()">
             START GENERATING
         </button>
 
@@ -250,32 +178,29 @@ button {
     </section>
 
     <section class="panel">
-        <div class="results-heading">
-            <h2>اليوزرات المولّدة</h2>
+        <div class="results-title">
+            <h3>اليوزرات المولّدة</h3>
             <span class="counter" id="counter">0 يوزر</span>
         </div>
 
         <div id="results">
-            <div class="empty">
-                اضغط START GENERATING للبدء
-            </div>
+            <p class="note">اضغط START GENERATING للبدء</p>
         </div>
     </section>
 
-    <footer class="footer">
-        هذه اقتراحات عشوائية، وليست تأكيدًا على توفر اليوزر في تيك توك.
-    </footer>
+    <p class="note">
+        يتم توليد اقتراحات عشوائية فقط. حالة التوفر في تيك توك غير مؤكدة.
+    </p>
 
-</main>
+</div>
 
 <script>
 let running = false;
 let timer = null;
 let count = 0;
-const seen = new Set();
+let seen = new Set();
 
-const characters =
-    "abcdefghijklmnopqrstuvwxyz0123456789._";
+const characters = "abcdefghijklmnopqrstuvwxyz0123456789._";
 
 function makeUsername(length) {
     let username = "";
@@ -292,7 +217,7 @@ function makeUsername(length) {
 function addUsername(username) {
     const results = document.getElementById("results");
 
-    if (results.querySelector(".empty")) {
+    if (results.querySelector(".note")) {
         results.innerHTML = "";
     }
 
@@ -300,7 +225,6 @@ function addUsername(username) {
     row.className = "result";
 
     const details = document.createElement("div");
-    details.className = "details";
 
     const name = document.createElement("div");
     name.className = "username";
@@ -321,11 +245,8 @@ function addUsername(username) {
         try {
             await navigator.clipboard.writeText(username);
             copy.textContent = "تم النسخ";
-
-            setTimeout(function () {
-                copy.textContent = "نسخ";
-            }, 1200);
-        } catch (error) {
+            setTimeout(() => copy.textContent = "نسخ", 1000);
+        } catch {
             window.prompt("انسخ اليوزر:", username);
         }
     };
@@ -335,10 +256,9 @@ function addUsername(username) {
     results.prepend(row);
 
     count++;
-    document.getElementById("counter").textContent =
-        count + " يوزر";
+    document.getElementById("counter").textContent = count + " يوزر";
 
-    while (results.children.length > 50) {
+    while (results.children.length > 60) {
         results.removeChild(results.lastElementChild);
     }
 }
@@ -347,14 +267,10 @@ function startGenerating() {
     if (running) return;
 
     running = true;
-    document.getElementById("startBtn").textContent =
-        "GENERATING...";
+    document.getElementById("startBtn").textContent = "GENERATING...";
 
-    timer = setInterval(function () {
-        const length = Number(
-            document.getElementById("length").value
-        );
-
+    timer = setInterval(() => {
+        const length = Number(document.getElementById("length").value);
         let username;
 
         do {
@@ -363,16 +279,13 @@ function startGenerating() {
 
         seen.add(username);
         addUsername(username);
-    }, 250);
+    }, 180);
 }
 
 function stopGenerating() {
     running = false;
     clearInterval(timer);
-    timer = null;
-
-    document.getElementById("startBtn").textContent =
-        "START GENERATING";
+    document.getElementById("startBtn").textContent = "START GENERATING";
 }
 </script>
 </body>
