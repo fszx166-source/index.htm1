@@ -1,300 +1,102 @@
-
-from flask import Flask, render_template_string
-
-app = Flask(__name__)
-
-PAGE = r"""
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خميعات لليوزرات</title>
-
 <style>
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    background: #08090d;
-    color: white;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 25px 14px;
-}
-
-.container {
-    width: 100%;
-    max-width: 460px;
-}
-
-.header {
-    text-align: center;
-    margin: 20px 0 25px;
-}
-
-.header h1 {
-    color: #b9a0ff;
-    font-size: 29px;
-    margin-bottom: 8px;
-}
-
-.header p {
-    color: #9999aa;
-    font-size: 13px;
-}
-
-.panel {
-    background: #12131b;
-    border: 1px solid #292a38;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 17px;
-}
-
-label {
-    display: block;
-    color: #c7c7d6;
-    margin-bottom: 10px;
-    font-size: 14px;
-}
-
-select, button {
-    width: 100%;
-    padding: 14px;
-    border-radius: 11px;
-    font-size: 15px;
-    font-weight: bold;
-}
-
-select {
-    background: #090a10;
-    color: white;
-    border: 1px solid #343548;
-    margin-bottom: 15px;
-}
-
-button {
-    border: 0;
-    cursor: pointer;
-    margin-top: 8px;
-}
-
-.start {
-    background: #9b7bff;
-    color: #100b20;
-}
-
-.stop {
-    background: #292a38;
-    color: white;
-}
-
-.results-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 13px;
-}
-
-.results-title h3 {
-    margin: 0;
-    font-size: 17px;
-}
-
-.counter {
-    color: #b9a0ff;
-    font-size: 13px;
-}
-
-.result {
-    background: #090a10;
-    border: 1px solid #292a38;
-    border-radius: 10px;
-    padding: 13px;
-    margin-top: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-
-.username {
-    font-size: 16px;
-    font-weight: bold;
-    overflow-wrap: anywhere;
-}
-
-.status {
-    display: block;
-    color: #f0c674;
-    font-size: 11px;
-    margin-top: 5px;
-}
-
-.copy {
-    width: auto;
-    margin: 0;
-    padding: 9px 12px;
-    background: #292a38;
-    color: white;
-    font-size: 12px;
-}
-
-.note {
-    text-align: center;
-    color: #858596;
-    font-size: 12px;
-    line-height: 1.8;
-    padding: 8px;
-}
+*{box-sizing:border-box}
+body{margin:0;background:#09090d;color:#fff;font-family:Arial,sans-serif;padding:25px 14px}
+.container{width:100%;max-width:850px;margin:35px auto;background:#14141c;border:1px solid #292936;border-radius:22px;padding:28px}
+header{text-align:center;margin-bottom:28px}
+h1{font-size:30px;margin:0 0 12px}
+p{color:#aaa;line-height:1.8}
+.badge{display:inline-block;background:#252532;color:#bbb;border-radius:20px;padding:8px 14px;font-size:12px}
+label{display:block;margin:18px 0 10px;font-weight:bold}
+select,button{font-size:16px;border-radius:12px;padding:14px;border:1px solid #333;background:#20202b;color:white;width:100%}
+.buttons{display:flex;gap:12px;margin-top:15px}
+button{cursor:pointer;font-weight:bold}
+.start{background:#fff;color:#111;border-color:#fff}
+.stop{background:#302029;color:#ff8c9b}
+.stats{display:flex;justify-content:space-between;gap:10px;margin:24px 0;color:#aaa}
+#results{display:grid;gap:10px}
+.item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#20202a;padding:14px;border-radius:12px;direction:ltr}
+.username{font-weight:bold;font-size:18px;overflow-wrap:anywhere}
+.copy{width:auto;padding:9px 13px;font-size:13px}
+.status{color:#aaa;font-size:12px;margin-top:5px}
+footer{text-align:center;color:#888;font-size:12px;margin-top:25px;line-height:1.8}
+@media(max-width:480px){.container{padding:18px;margin:12px auto}h1{font-size:25px}.buttons{gap:8px}.item{padding:10px}.username{font-size:16px}}
 </style>
 </head>
-
 <body>
 <div class="container">
-
-    <header class="header">
-        <h1>خميعات لليوزرات</h1>
-        <p>مولّد خماسيات وثلاثيات ورباعيات اليوزرات</p>
-    </header>
-
-    <section class="panel">
-        <label for="length">اختر طول اليوزر</label>
-        <select id="length">
-            <option value="3">ثلاثي — 3 خانات</option>
-            <option value="4" selected>رباعي — 4 خانات</option>
-        </select>
-
-        <button class="start" id="startBtn" onclick="startGenerating()">
-            START GENERATING
-        </button>
-
-        <button class="stop" onclick="stopGenerating()">
-            STOP
-        </button>
-    </section>
-
-    <section class="panel">
-        <div class="results-title">
-            <h3>اليوزرات المولّدة</h3>
-            <span class="counter" id="counter">0 يوزر</span>
-        </div>
-
-        <div id="results">
-            <p class="note">اضغط START GENERATING للبدء</p>
-        </div>
-    </section>
-
-    <p class="note">
-        يتم توليد اقتراحات عشوائية فقط. حالة التوفر في تيك توك غير مؤكدة.
-    </p>
-
+<header>
+<h1>خميعات لليوزرات</h1>
+<p>ولّد اقتراحات يوزرات تيك توك بسهولة ✨</p>
+<span class="badge">USERNAME GENERATOR</span>
+</header>
+<label for="length">طول اليوزر</label>
+<select id="length">
+<option value="3">3 خانات</option>
+<option value="4" selected>4 خانات</option>
+<option value="5">5 خانات</option>
+</select>
+<div class="buttons">
+<button class="start" id="start">START GENERATING</button>
+<button class="stop" id="stop">STOP</button>
 </div>
-
+<div class="stats">
+<span>الاقتراحات: <b id="count">0</b></span>
+<span id="state">متوقف</span>
+</div>
+<div id="results"></div>
+<footer>التوفر غير معروف — الأداة تولّد اقتراحات فقط ولا تتحقق من توفر اليوزر في تيك توك.</footer>
+</div>
 <script>
-let running = false;
-let timer = null;
-let count = 0;
-let seen = new Set();
-
-const characters = "abcdefghijklmnopqrstuvwxyz0123456789._";
-
-function makeUsername(length) {
-    let username = "";
-
-    for (let i = 0; i < length; i++) {
-        username += characters[
-            Math.floor(Math.random() * characters.length)
-        ];
-    }
-
-    return username;
+const chars="abcdefghijklmnopqrstuvwxyz0123456789._";
+const results=document.getElementById("results");
+const count=document.getElementById("count");
+const state=document.getElementById("state");
+let running=false,timer=null,total=0;
+const used=new Set();
+function makeUsername(n){
+let s="";
+for(let i=0;i<n;i++)s+=chars[Math.floor(Math.random()*chars.length)];
+return s;
 }
-
-function addUsername(username) {
-    const results = document.getElementById("results");
-
-    if (results.querySelector(".note")) {
-        results.innerHTML = "";
-    }
-
-    const row = document.createElement("div");
-    row.className = "result";
-
-    const details = document.createElement("div");
-
-    const name = document.createElement("div");
-    name.className = "username";
-    name.textContent = "@" + username;
-
-    const status = document.createElement("span");
-    status.className = "status";
-    status.textContent = "التوفر غير معروف";
-
-    details.appendChild(name);
-    details.appendChild(status);
-
-    const copy = document.createElement("button");
-    copy.className = "copy";
-    copy.textContent = "نسخ";
-
-    copy.onclick = async function () {
-        try {
-            await navigator.clipboard.writeText(username);
-            copy.textContent = "تم النسخ";
-            setTimeout(() => copy.textContent = "نسخ", 1000);
-        } catch {
-            window.prompt("انسخ اليوزر:", username);
-        }
-    };
-
-    row.appendChild(details);
-    row.appendChild(copy);
-    results.prepend(row);
-
-    count++;
-    document.getElementById("counter").textContent = count + " يوزر";
-
-    while (results.children.length > 60) {
-        results.removeChild(results.lastElementChild);
-    }
+function generate(){
+let attempts=0;
+while(attempts<100){
+attempts++;
+const name=makeUsername(Number(document.getElementById("length").value));
+if(used.has(name))continue;
+used.add(name);total++;
+const item=document.createElement("div");item.className="item";
+const info=document.createElement("div");
+const username=document.createElement("div");username.className="username";username.textContent="@"+name;
+const status=document.createElement("div");status.className="status";status.textContent="التوفر غير معروف";
+info.append(username,status);
+const copy=document.createElement("button");copy.className="copy";copy.textContent="نسخ";
+copy.onclick=async()=>{
+try{await navigator.clipboard.writeText(name);}
+catch(e){
+const area=document.createElement("textarea");area.value=name;document.body.appendChild(area);area.select();document.execCommand("copy");area.remove();
 }
-
-function startGenerating() {
-    if (running) return;
-
-    running = true;
-    document.getElementById("startBtn").textContent = "GENERATING...";
-
-    timer = setInterval(() => {
-        const length = Number(document.getElementById("length").value);
-        let username;
-
-        do {
-            username = makeUsername(length);
-        } while (seen.has(username));
-
-        seen.add(username);
-        addUsername(username);
-    }, 180);
+copy.textContent="تم النسخ ✓";setTimeout(()=>copy.textContent="نسخ",1200);
+};
+item.append(info,copy);results.prepend(item);count.textContent=total;
+while(results.children.length>100)results.lastElementChild.remove();
+return;
 }
-
-function stopGenerating() {
-    running = false;
-    clearInterval(timer);
-    document.getElementById("startBtn").textContent = "START GENERATING";
+stopGenerating();state.textContent="جرّب طولًا آخر";
 }
+function stopGenerating(){
+running=false;if(timer){clearInterval(timer);timer=null;}state.textContent="متوقف";
+}
+document.getElementById("start").onclick=()=>{
+if(running)return;running=true;state.textContent="يولّد الآن...";generate();timer=setInterval(generate,700);
+};
+document.getElementById("stop").onclick=stopGenerating;
 </script>
 </body>
 </html>
-"""
-
-@app.route("/")
-def home():
-    return render_template_string(PAGE)
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
